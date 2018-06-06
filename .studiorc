@@ -1,0 +1,39 @@
+#!/bin/bash
+
+export HAB_BLDR_CHANNEL=expeditor-chef-chef-server-master
+export HAB_STUDIO_SUP=false
+
+mount --bind / / > /dev/null
+
+function start_sup() {
+  hab sup status 2>/dev/null 1>&2
+  [[ $? == 0 ]] && return
+  mkdir -p /hab/sup/default
+  echo "=> Launching the Habitat Supervisor in the background..."
+  hab sup run $* > /hab/sup/default/sup.log &
+  while ! hab sup status >/dev/null 2>&1; do
+    sleep 1
+  done
+}
+
+function runit() {
+    start_sup
+
+    echo "=> Starting postgresql"
+    hab svc load core/postgresql
+
+    echo "=> Starting ES5"
+    hab svc load core/elasticsearch5
+
+    sleep 3
+
+    echo "=> Starting Chef Server services"
+    hab svc load $HAB_ORIGIN/composite-example --bind oc_id:database:postgresql.default --bind oc_bifrost:database:postgresql.default --bind bookshelf:database:postgresql.default --bind oc_erchef:database:postgresql.default --bind oc_erchef:elasticsearch:elasticsearch5.default --bind chef-server-nginx:elasticsearch:elasticsearch5.default
+}
+
+function cleanup() {
+    umount /
+}
+
+# When exiting the studio save the bash history to a file
+trap cleanup EXIT
