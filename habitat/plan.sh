@@ -23,5 +23,5 @@ pkg_bind_map=(
    [chef/bookshelf]="chef-server-ctl:chef/chef-server-ctl"
    [chef/oc_bifrost]="chef-server-ctl:chef/chef-server-ctl"
    [chef/oc_erchef]="bookshelf:chef/bookshelf oc_bifrost:chef/oc_bifrost chef-server-ctl:chef/chef-server-ctl"
-   [chef/chef-server-nginx]="oc_erchef:chef/oc_erchef bookshelf:chef/bookshelf oc_bifrost:chef/oc_bifrost chef-server-ctl:chef/chef-server-ctl"
+   [chef/chef-server-nginx]="oc_erchef:chef/oc_erchef bookshelf:chef/bookshelf oc_bifrost:chef/oc_bifrost oc_id:chef/oc_id chef-server-ctl:chef/chef-server-ctl"
 )

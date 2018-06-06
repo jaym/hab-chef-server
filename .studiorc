@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export HAB_BLDR_CHANNEL=expeditor-chef-chef-server-master
 export HAB_STUDIO_SUP=false
 
 mount --bind / / > /dev/null
@@ -16,7 +15,18 @@ function start_sup() {
   done
 }
 
+function build() {
+  HAB_BLDR_CHANNEL=expeditor-chef-chef-server-master /hab/bin/build $@
+}
+
 function runit() {
+    export HAB_CHEF_SERVER_CTL="
+[chef_server_api]
+ip = '127.0.0.1'
+
+[secrets.data_collector]
+token = '93a49a4f2482c64126f7b6015e6b0f30284287ee4054ff8807fb63d9cbd1c506'
+"
     start_sup
 
     echo "=> Starting postgresql"
